@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Betting Tools - Odds & Vig Calculator</title>
   <meta name="description" content="Fast, modern betting odds converter, payout calculator, and two-way vig & hold calculator.">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 <body>
   <div class="container">
@@ -38,20 +41,24 @@
     <!-- Tab Navigation -->
     <nav class="tabs-nav" role="tablist" aria-label="Tool selection">
       <button
+        type="button"
         id="tab-converter"
         class="tab-btn active"
         role="tab"
         aria-selected="true"
         aria-controls="panel-converter"
+        onclick="window.switchTab && window.switchTab('panel-converter')"
       >
         <span>🔄</span> Odds Converter
       </button>
       <button
+        type="button"
         id="tab-vig"
         class="tab-btn"
         role="tab"
         aria-selected="false"
         aria-controls="panel-vig"
+        onclick="window.switchTab && window.switchTab('panel-vig')"
       >
         <span>⚖️</span> Vig Calculator
       </button>
@@ -59,7 +66,7 @@
 
     <main>
       <!-- TAB 1: Odds Converter -->
-      <div id="panel-converter" class="tab-panel active" role="tabpanel" aria-labelledby="tab-converter">
+      <div id="panel-converter" class="tab-panel active" role="tabpanel" aria-labelledby="tab-converter" style="display: block;">
         <!-- Main Converter Card -->
         <section class="card" aria-labelledby="converter-title">
           <h2 id="converter-title" class="card-title">
@@ -231,7 +238,7 @@
       </div>
 
       <!-- TAB 2: Vig Calculator -->
-      <div id="panel-vig" class="tab-panel" role="tabpanel" aria-labelledby="tab-vig" hidden>
+      <div id="panel-vig" class="tab-panel" role="tabpanel" aria-labelledby="tab-vig" style="display: none;">
         <!-- Vig Inputs Card -->
         <section class="card" aria-labelledby="vig-input-title">
           <h2 id="vig-input-title" class="card-title">
@@ -396,6 +403,6 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite">Copied to clipboard!</div>
 
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js?v=2"></script>
 </body>
 </html>

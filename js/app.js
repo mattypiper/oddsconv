@@ -372,28 +372,42 @@ function initTheme() {
 /**
  * Tab Navigation
  */
+export function switchTab(targetPanelId) {
+  const allButtons = document.querySelectorAll('.tab-btn');
+  const allPanels = document.querySelectorAll('.tab-panel');
+
+  allButtons.forEach(btn => {
+    const isTarget = btn.getAttribute('aria-controls') === targetPanelId;
+    btn.classList.toggle('active', isTarget);
+    btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+  });
+
+  allPanels.forEach(panel => {
+    if (panel.id === targetPanelId) {
+      panel.classList.add('active');
+      panel.removeAttribute('hidden');
+      panel.style.display = 'block';
+    } else {
+      panel.classList.remove('active');
+      panel.setAttribute('hidden', '');
+      panel.style.display = 'none';
+    }
+  });
+}
+
+// Expose switchTab on window so inline onclick handlers or console can trigger it
+window.switchTab = switchTab;
+
 function initTabs() {
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const targetPanelId = btn.getAttribute('aria-controls');
-
-      tabButtons.forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-
-      tabPanels.forEach(panel => {
-        if (panel.id === targetPanelId) {
-          panel.classList.add('active');
-          panel.removeAttribute('hidden');
-        } else {
-          panel.classList.remove('active');
-          panel.setAttribute('hidden', '');
-        }
-      });
-    });
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if (btn) {
+      e.preventDefault();
+      const target = btn.getAttribute('aria-controls');
+      if (target) {
+        switchTab(target);
+      }
+    }
   });
 }
 
