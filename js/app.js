@@ -472,7 +472,9 @@ function initEventListeners() {
     });
   });
 
-  vigClearBtn.addEventListener('click', clearAllVig);
+  if (vigClearBtn) {
+    vigClearBtn.addEventListener('click', clearAllVig);
+  }
 
   // Copy Buttons
   copyButtons.forEach(btn => {
