@@ -282,11 +282,9 @@ header {
   padding-top: 1.25rem;
   border-top: 1px dashed var(--border-color);
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
-  overflow-x: auto;
-  scrollbar-width: thin;
 }
 
 .presets-label {
@@ -323,7 +321,6 @@ header {
 }
 
 .reset-btn {
-  margin-left: auto;
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-muted);
