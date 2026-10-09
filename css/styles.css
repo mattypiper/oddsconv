@@ -282,9 +282,11 @@ header {
   padding-top: 1.25rem;
   border-top: 1px dashed var(--border-color);
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .presets-label {
@@ -294,6 +296,8 @@ header {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-right: 0.25rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .preset-chip {
@@ -306,6 +310,8 @@ header {
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: var(--transition);
 }
 
@@ -326,6 +332,8 @@ header {
   padding: 0.35rem 0.75rem;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: var(--transition);
 }
 
