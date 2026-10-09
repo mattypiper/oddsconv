@@ -9,6 +9,7 @@ import {
   probabilityToDecimal,
   decimalToFractional,
   calculatePayout,
+  calculateVig,
   formatUsOdds,
   formatDecimalOdds,
   formatProbability,
@@ -16,45 +17,29 @@ import {
 } from '../js/odds.js';
 
 test('US to Decimal conversion', () => {
-  // -110 US => 1 + 100/110 = 1.90909...
   assert.ok(Math.abs(usToDecimal(-110) - (1 + 100 / 110)) < 1e-9);
-  // +100 US => 2.0
   assert.equal(usToDecimal(100), 2.0);
-  // -100 US => 2.0
   assert.equal(usToDecimal(-100), 2.0);
-  // +150 US => 2.5
   assert.equal(usToDecimal(150), 2.5);
-  // -200 US => 1.5
   assert.equal(usToDecimal(-200), 1.5);
-  // Invalid (0 or NaN)
   assert.equal(usToDecimal(0), null);
   assert.equal(usToDecimal(NaN), null);
 });
 
 test('Decimal to US conversion', () => {
-  // 2.0 => +100
   assert.equal(decimalToUs(2.0), 100);
-  // 2.5 => +150
   assert.equal(decimalToUs(2.5), 150);
-  // 1.5 => -200
   assert.equal(decimalToUs(1.5), -200);
-  // 1.9090909 => -110
   assert.equal(decimalToUs(1.9090909), -110);
-  // Invalid <= 1
   assert.equal(decimalToUs(1.0), null);
   assert.equal(decimalToUs(0.5), null);
 });
 
 test('US to Probability conversion', () => {
-  // +100 => 50% (0.5)
   assert.equal(usToProbability(100), 0.5);
-  // -100 => 50% (0.5)
   assert.equal(usToProbability(-100), 0.5);
-  // +150 => 100 / 250 = 0.4
   assert.equal(usToProbability(150), 0.4);
-  // -110 => 110 / 210 ≈ 0.5238095
   assert.ok(Math.abs(usToProbability(-110) - 110 / 210) < 1e-9);
-  // -200 => 200 / 300 = 2/3 ≈ 0.66666...
   assert.ok(Math.abs(usToProbability(-200) - 2 / 3) < 1e-9);
 });
 
@@ -89,6 +74,24 @@ test('Payout calculations', () => {
   const res2 = calculatePayout(50, 1.90909);
   assert.equal(res2.payout, 95.45);
   assert.equal(res2.profit, 45.45);
+});
+
+test('Vig calculations', () => {
+  // 100/100 should be 0% vig
+  const evenVig = calculateVig(100, 100);
+  assert.ok(evenVig);
+  assert.equal(evenVig.vig.toFixed(2), '0.00');
+  assert.equal(evenVig.overroundTotal.toFixed(2), '100.00');
+  assert.equal(evenVig.fairP1, 50);
+  assert.equal(evenVig.fairP2, 50);
+
+  // -110/-110 should be 4.54% vig
+  const stdVig = calculateVig(-110, -110);
+  assert.ok(stdVig);
+  assert.equal(stdVig.vig.toFixed(2), '4.54');
+  assert.equal(stdVig.overroundTotal.toFixed(2), '104.76');
+  assert.equal(stdVig.fairP1, 50);
+  assert.equal(stdVig.fairP2, 50);
 });
 
 test('Formatting utilities', () => {

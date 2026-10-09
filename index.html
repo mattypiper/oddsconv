@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Odds Converter - Modern Betting Tools</title>
-  <meta name="description" content="Fast, modern betting odds converter and payout calculator. Convert between American / US odds, Decimal odds, and Implied Probability in real time.">
+  <title>Betting Tools - Odds & Vig Calculator</title>
+  <meta name="description" content="Fast, modern betting odds converter, payout calculator, and two-way vig & hold calculator.">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -14,8 +14,8 @@
       <div class="brand">
         <div class="logo-icon">⚡</div>
         <div>
-          <h1>Odds Converter</h1>
-          <p>Betting odds & implied probability converter</p>
+          <h1>Betting Tools</h1>
+          <p>Odds converter & vigorish calculator</p>
         </div>
       </div>
       <div class="header-actions">
@@ -35,175 +35,362 @@
       </div>
     </header>
 
+    <!-- Tab Navigation -->
+    <nav class="tabs-nav" role="tablist" aria-label="Tool selection">
+      <button
+        id="tab-converter"
+        class="tab-btn active"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-converter"
+      >
+        <span>🔄</span> Odds Converter
+      </button>
+      <button
+        id="tab-vig"
+        class="tab-btn"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-vig"
+      >
+        <span>⚖️</span> Vig Calculator
+      </button>
+    </nav>
+
     <main>
-      <!-- Main Converter Card -->
-      <section class="card" aria-labelledby="converter-title">
-        <h2 id="converter-title" class="card-title">
-          <span>🔄</span> Live Converter
-        </h2>
+      <!-- TAB 1: Odds Converter -->
+      <div id="panel-converter" class="tab-panel active" role="tabpanel" aria-labelledby="tab-converter">
+        <!-- Main Converter Card -->
+        <section class="card" aria-labelledby="converter-title">
+          <h2 id="converter-title" class="card-title">
+            <span>🔄</span> Live Converter
+          </h2>
 
-        <form id="oddsForm" autocomplete="off" onsubmit="return false;">
-          <div class="inputs-grid">
-            <!-- US Odds -->
-            <div class="input-row">
-              <div class="input-label-group">
-                <label for="usOdds" class="input-label">US Odds</label>
-                <span class="input-hint">Moneyline (e.g. -110, +150)</span>
-              </div>
-              <div class="input-wrapper">
-                <div class="input-container">
-                  <input
-                    type="text"
-                    inputmode="text"
-                    id="usOdds"
-                    class="form-input"
-                    placeholder="-110"
-                    aria-describedby="usOddsError"
-                  >
-                  <button type="button" class="copy-btn" data-target="usOdds" title="Copy US odds" aria-label="Copy US odds">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                  </button>
+          <form id="oddsForm" autocomplete="off" onsubmit="return false;">
+            <div class="inputs-grid">
+              <!-- US Odds -->
+              <div class="input-row">
+                <div class="input-label-group">
+                  <label for="usOdds" class="input-label">US Odds</label>
+                  <span class="input-hint">Moneyline (e.g. -110, +150)</span>
                 </div>
-                <div id="usOddsError" class="error-message" role="alert">Invalid US odds. Value cannot be 0 or between -100 and 100.</div>
+                <div class="input-wrapper">
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      inputmode="text"
+                      id="usOdds"
+                      class="form-input"
+                      placeholder="-110"
+                      aria-describedby="usOddsError"
+                    >
+                    <button type="button" class="copy-btn" data-target="usOdds" title="Copy US odds" aria-label="Copy US odds">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="usOddsError" class="error-message" role="alert">Invalid US odds. Value cannot be 0 or between -100 and 100.</div>
+                </div>
+              </div>
+
+              <!-- Implied Probability -->
+              <div class="input-row">
+                <div class="input-label-group">
+                  <label for="probability" class="input-label">Probability</label>
+                  <span class="input-hint">0.0 to 1.0 (or %)</span>
+                </div>
+                <div class="input-wrapper">
+                  <div class="input-container">
+                    <input
+                      type="number"
+                      id="probability"
+                      class="form-input"
+                      min="0"
+                      max="1"
+                      step="0.001"
+                      placeholder="0.524"
+                      aria-describedby="probabilityError"
+                    >
+                    <button type="button" class="copy-btn" data-target="probability" title="Copy Probability" aria-label="Copy Probability">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="probabilityError" class="error-message" role="alert">Out of range. Probability must be strictly between 0 and 1.0.</div>
+                </div>
+              </div>
+
+              <!-- Decimal Odds -->
+              <div class="input-row">
+                <div class="input-label-group">
+                  <label for="decimalOdds" class="input-label">Decimal Odds</label>
+                  <span class="input-hint">European format (min > 1.0)</span>
+                </div>
+                <div class="input-wrapper">
+                  <div class="input-container">
+                    <input
+                      type="number"
+                      id="decimalOdds"
+                      class="form-input"
+                      min="1.001"
+                      step="0.001"
+                      placeholder="1.909"
+                      aria-describedby="decimalOddsError"
+                    >
+                    <button type="button" class="copy-btn" data-target="decimalOdds" title="Copy Decimal odds" aria-label="Copy Decimal odds">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="decimalOddsError" class="error-message" role="alert">Invalid. Decimal odds must be greater than 1.0.</div>
+                </div>
               </div>
             </div>
 
-            <!-- Implied Probability -->
-            <div class="input-row">
-              <div class="input-label-group">
-                <label for="probability" class="input-label">Probability</label>
-                <span class="input-hint">0.0 to 1.0 (or %)</span>
-              </div>
-              <div class="input-wrapper">
-                <div class="input-container">
-                  <input
-                    type="number"
-                    id="probability"
-                    class="form-input"
-                    min="0"
-                    max="1"
-                    step="0.001"
-                    placeholder="0.524"
-                    aria-describedby="probabilityError"
-                  >
-                  <button type="button" class="copy-btn" data-target="probability" title="Copy Probability" aria-label="Copy Probability">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                  </button>
+            <!-- Quick Presets -->
+            <div class="presets-container">
+              <span class="presets-label">Presets:</span>
+              <button type="button" class="preset-chip" data-us="-110">-110</button>
+              <button type="button" class="preset-chip" data-us="100">+100</button>
+              <button type="button" class="preset-chip" data-us="-150">-150</button>
+              <button type="button" class="preset-chip" data-us="150">+150</button>
+              <button type="button" class="preset-chip" data-us="-200">-200</button>
+              <button type="button" class="preset-chip" data-us="200">+200</button>
+              <button type="button" id="clearBtn" class="reset-btn">Clear</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Payout & Stake Calculator -->
+        <section class="card" aria-labelledby="payout-title">
+          <h2 id="payout-title" class="card-title">
+            <span>💰</span> Payout Calculator
+          </h2>
+          <div class="calc-controls">
+            <div>
+              <label for="stakeAmount" class="input-label" style="margin-bottom: 0.5rem;">Stake Amount ($)</label>
+              <input
+                type="number"
+                id="stakeAmount"
+                class="form-input"
+                value="100"
+                min="1"
+                step="any"
+              >
+            </div>
+            <div class="calc-stat-box">
+              <span class="stat-label">Potential Profit</span>
+              <span id="calcProfit" class="stat-value">$90.91</span>
+            </div>
+            <div class="calc-stat-box highlight">
+              <span class="stat-label">Total Payout</span>
+              <span id="calcPayout" class="stat-value">$190.91</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Additional Metrics -->
+        <section class="card" aria-labelledby="summary-title">
+          <h2 id="summary-title" class="card-title">
+            <span>📊</span> Odds Overview
+          </h2>
+          <div class="summary-grid">
+            <div class="stat-box">
+              <span class="stat-label">Implied Probability</span>
+              <span id="statPercentage" class="stat-value">52.4%</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Fractional Odds</span>
+              <span id="statFractional" class="stat-value">10/11</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Decimal Payout Factor</span>
+              <span id="statDecimalFactor" class="stat-value">1.909x</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Formula & Calculation Guide -->
+        <section class="guide-accordion">
+          <details>
+            <summary>📐 Conversion Formulas Reference</summary>
+            <div class="guide-content">
+              <p><strong>US Negative Odds (Favorites):</strong> Decimal = <code>1 - (100 / US)</code> | Probability = <code>US / (US - 100)</code></p>
+              <p style="margin-top: 0.4rem;"><strong>US Positive Odds (Underdogs):</strong> Decimal = <code>1 + (US / 100)</code> | Probability = <code>100 / (US + 100)</code></p>
+              <p style="margin-top: 0.4rem;"><strong>Decimal to Probability:</strong> Probability = <code>1 / Decimal</code></p>
+              <p style="margin-top: 0.4rem;"><strong>Probability to Decimal:</strong> Decimal = <code>1 / Probability</code></p>
+            </div>
+          </details>
+        </section>
+      </div>
+
+      <!-- TAB 2: Vig Calculator -->
+      <div id="panel-vig" class="tab-panel" role="tabpanel" aria-labelledby="tab-vig" hidden>
+        <!-- Vig Inputs Card -->
+        <section class="card" aria-labelledby="vig-input-title">
+          <h2 id="vig-input-title" class="card-title">
+            <span>⚖️</span> Two-Way Market Odds
+          </h2>
+          <p class="tab-description">Enter the US (moneyline) odds for both sides of the bet to calculate the bookmaker's vig and hold.</p>
+
+          <form id="vigForm" autocomplete="off" onsubmit="return false;">
+            <div class="inputs-grid">
+              <!-- Side 1 Odds -->
+              <div class="input-row">
+                <div class="input-label-group">
+                  <label for="vigOdds1" class="input-label">Side 1 Odds</label>
+                  <span class="input-hint">e.g. -110, +150</span>
                 </div>
-                <div id="probabilityError" class="error-message" role="alert">Out of range. Probability must be strictly between 0 and 1.0.</div>
+                <div class="input-wrapper">
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      inputmode="text"
+                      id="vigOdds1"
+                      class="form-input"
+                      value="-110"
+                      placeholder="-110"
+                      aria-describedby="vigOdds1Error"
+                    >
+                    <button type="button" class="copy-btn" data-target="vigOdds1" title="Copy Side 1 odds" aria-label="Copy Side 1 odds">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="vigOdds1Error" class="error-message" role="alert">Invalid US odds. Value cannot be 0 or between -100 and 100.</div>
+                </div>
+              </div>
+
+              <!-- Side 2 Odds -->
+              <div class="input-row">
+                <div class="input-label-group">
+                  <label for="vigOdds2" class="input-label">Side 2 Odds</label>
+                  <span class="input-hint">e.g. -110, -180</span>
+                </div>
+                <div class="input-wrapper">
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      inputmode="text"
+                      id="vigOdds2"
+                      class="form-input"
+                      value="-110"
+                      placeholder="-110"
+                      aria-describedby="vigOdds2Error"
+                    >
+                    <button type="button" class="copy-btn" data-target="vigOdds2" title="Copy Side 2 odds" aria-label="Copy Side 2 odds">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                    </button>
+                  </div>
+                  <div id="vigOdds2Error" class="error-message" role="alert">Invalid US odds. Value cannot be 0 or between -100 and 100.</div>
+                </div>
               </div>
             </div>
 
-            <!-- Decimal Odds -->
-            <div class="input-row">
-              <div class="input-label-group">
-                <label for="decimalOdds" class="input-label">Decimal Odds</label>
-                <span class="input-hint">European format (min > 1.0)</span>
+            <!-- Vig Quick Presets -->
+            <div class="presets-container">
+              <span class="presets-label">Presets:</span>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="-110" data-o2="-110">-110 / -110 (Standard)</button>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="100" data-o2="100">+100 / +100 (0% Vig)</button>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="-105" data-o2="-105">-105 / -105</button>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="-115" data-o2="-105">-115 / -105</button>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="-150" data-o2="130">-150 / +130</button>
+              <button type="button" class="preset-chip vig-preset-chip" data-o1="-200" data-o2="170">-200 / +170</button>
+              <button type="button" id="vigClearBtn" class="reset-btn">Clear</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Vig Results Card -->
+        <section class="card" aria-labelledby="vig-results-title">
+          <h2 id="vig-results-title" class="card-title">
+            <span>📈</span> Vig & Market Metrics
+          </h2>
+
+          <div class="vig-hero-card">
+            <span class="vig-hero-label">Vigorish (Vig / Juice)</span>
+            <div id="vigPercentDisplay" class="vig-hero-val">4.54%</div>
+            <p class="vig-hero-sub">The fee percentage charged by the bookmaker for brokering the wager.</p>
+          </div>
+
+          <div class="summary-grid" style="margin-top: 1.25rem;">
+            <div class="stat-box">
+              <span class="stat-label">Overround (Total Book)</span>
+              <span id="vigOverroundDisplay" class="stat-value">104.76%</span>
+              <span class="stat-subtext" id="vigMarkupDisplay">+4.76% margin</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Theoretical Hold</span>
+              <span id="vigHoldDisplay" class="stat-value">4.54%</span>
+              <span class="stat-subtext">Expected house retention</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Fair Market Odds Card -->
+        <section class="card" aria-labelledby="fair-odds-title">
+          <h2 id="fair-odds-title" class="card-title">
+            <span>🎯</span> Fair No-Vig Odds & Probabilities
+          </h2>
+          <div class="fair-market-grid">
+            <div class="fair-market-box">
+              <div class="fair-side-title">Side 1 Fair Market</div>
+              <div class="fair-stat-row">
+                <span>Fair Win Probability:</span>
+                <strong id="fairP1Display">50.0%</strong>
               </div>
-              <div class="input-wrapper">
-                <div class="input-container">
-                  <input
-                    type="number"
-                    id="decimalOdds"
-                    class="form-input"
-                    min="1.001"
-                    step="0.001"
-                    placeholder="1.909"
-                    aria-describedby="decimalOddsError"
-                  >
-                  <button type="button" class="copy-btn" data-target="decimalOdds" title="Copy Decimal odds" aria-label="Copy Decimal odds">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                  </button>
-                </div>
-                <div id="decimalOddsError" class="error-message" role="alert">Invalid. Decimal odds must be greater than 1.0.</div>
+              <div class="fair-stat-row">
+                <span>Original Implied:</span>
+                <span id="origP1Display" class="text-muted-inline">52.4%</span>
+              </div>
+              <div class="fair-stat-row highlight">
+                <span>Fair US Odds:</span>
+                <strong id="fairUs1Display">+100</strong>
+              </div>
+            </div>
+
+            <div class="fair-market-box">
+              <div class="fair-side-title">Side 2 Fair Market</div>
+              <div class="fair-stat-row">
+                <span>Fair Win Probability:</span>
+                <strong id="fairP2Display">50.0%</strong>
+              </div>
+              <div class="fair-stat-row">
+                <span>Original Implied:</span>
+                <span id="origP2Display" class="text-muted-inline">52.4%</span>
+              </div>
+              <div class="fair-stat-row highlight">
+                <span>Fair US Odds:</span>
+                <strong id="fairUs2Display">+100</strong>
               </div>
             </div>
           </div>
+        </section>
 
-          <!-- Quick Presets -->
-          <div class="presets-container">
-            <span class="presets-label">Presets:</span>
-            <button type="button" class="preset-chip" data-us="-110">-110</button>
-            <button type="button" class="preset-chip" data-us="100">+100</button>
-            <button type="button" class="preset-chip" data-us="-150">-150</button>
-            <button type="button" class="preset-chip" data-us="150">+150</button>
-            <button type="button" class="preset-chip" data-us="-200">-200</button>
-            <button type="button" class="preset-chip" data-us="200">+200</button>
-            <button type="button" id="clearBtn" class="reset-btn">Clear</button>
-          </div>
-        </form>
-      </section>
-
-      <!-- Payout & Stake Calculator -->
-      <section class="card" aria-labelledby="payout-title">
-        <h2 id="payout-title" class="card-title">
-          <span>💰</span> Payout Calculator
-        </h2>
-        <div class="calc-controls">
-          <div>
-            <label for="stakeAmount" class="input-label" style="margin-bottom: 0.5rem;">Stake Amount ($)</label>
-            <input
-              type="number"
-              id="stakeAmount"
-              class="form-input"
-              value="100"
-              min="1"
-              step="any"
-            >
-          </div>
-          <div class="calc-stat-box">
-            <span class="stat-label">Potential Profit</span>
-            <span id="calcProfit" class="stat-value">$90.91</span>
-          </div>
-          <div class="calc-stat-box highlight">
-            <span class="stat-label">Total Payout</span>
-            <span id="calcPayout" class="stat-value">$190.91</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Additional Metrics -->
-      <section class="card" aria-labelledby="summary-title">
-        <h2 id="summary-title" class="card-title">
-          <span>📊</span> Odds Overview
-        </h2>
-        <div class="summary-grid">
-          <div class="stat-box">
-            <span class="stat-label">Implied Probability</span>
-            <span id="statPercentage" class="stat-value">52.4%</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-label">Fractional Odds</span>
-            <span id="statFractional" class="stat-value">10/11</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-label">Decimal Payout Factor</span>
-            <span id="statDecimalFactor" class="stat-value">1.909x</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- Formula & Calculation Guide -->
-      <section class="guide-accordion">
-        <details>
-          <summary>📐 Conversion Formulas Reference</summary>
-          <div class="guide-content">
-            <p><strong>US Negative Odds (Favorites):</strong> Decimal = <code>1 - (100 / US)</code> | Probability = <code>US / (US - 100)</code></p>
-            <p style="margin-top: 0.4rem;"><strong>US Positive Odds (Underdogs):</strong> Decimal = <code>1 + (US / 100)</code> | Probability = <code>100 / (US + 100)</code></p>
-            <p style="margin-top: 0.4rem;"><strong>Decimal to Probability:</strong> Probability = <code>1 / Decimal</code></p>
-            <p style="margin-top: 0.4rem;"><strong>Probability to Decimal:</strong> Decimal = <code>1 / Probability</code></p>
-          </div>
-        </details>
-      </section>
+        <!-- Vig Formula Guide -->
+        <section class="guide-accordion">
+          <details>
+            <summary>📐 Vig & Overround Calculation Guide</summary>
+            <div class="guide-content">
+              <p><strong>1. Implied Probabilities:</strong> Convert both sides' US odds to implied probabilities: <code>P₁</code> and <code>P₂</code>.</p>
+              <p style="margin-top: 0.4rem;"><strong>2. Overround:</strong> The sum of both probabilities: <code>Overround = P₁ + P₂</code> (typically &gt; 100% due to bookmaker markup).</p>
+              <p style="margin-top: 0.4rem;"><strong>3. Vig / Hold Percentage:</strong> <code>Vig = 1 - (1 / Overround)</code> or <code>(Overround - 1) / Overround</code>. For -110 / -110, overround is 104.76%, yielding <strong>4.54%</strong> vig.</p>
+              <p style="margin-top: 0.4rem;"><strong>4. Fair (No-Vig) Probabilities:</strong> <code>Fair P₁ = P₁ / Overround</code> and <code>Fair P₂ = P₂ / Overround</code>.</p>
+            </div>
+          </details>
+        </section>
+      </div>
     </main>
   </div>
 

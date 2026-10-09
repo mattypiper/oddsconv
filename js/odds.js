@@ -85,11 +85,6 @@ export function probabilityToDecimal(prob) {
   return 1 / prob;
 }
 
-/**
- * Approximates a decimal odds into standard fractional odds string (e.g. 3/2, 5/1, 10/11, 1/1).
- * @param {number} decOdds 
- * @returns {string|null}
- */
 function gcd(a, b) {
   return b === 0 ? a : gcd(b, a % b);
 }
@@ -154,7 +149,7 @@ export function formatDecimalOdds(val, precision = 3) {
 }
 
 /**
- * Format Probability as decimal [0, 1] and percentage.
+ * Format Probability as decimal [0, 1].
  * @param {number} val 
  * @param {number} precision 
  * @returns {string}
@@ -189,5 +184,56 @@ export function calculatePayout(stake, decOdds) {
   return {
     payout: Math.round(payout * 100) / 100,
     profit: Math.round(profit * 100) / 100
+  };
+}
+
+/**
+ * Calculate Vig (juice), overround, theoretical hold, and fair no-vig odds for a two-way market.
+ * @param {number} usOdds1 
+ * @param {number} usOdds2 
+ * @returns {{
+ *   vig: number,
+ *   hold: number,
+ *   overroundTotal: number,
+ *   overroundMarkup: number,
+ *   p1: number,
+ *   p2: number,
+ *   fairP1: number,
+ *   fairP2: number,
+ *   fairUs1: number|null,
+ *   fairUs2: number|null
+ * }|null}
+ */
+export function calculateVig(usOdds1, usOdds2) {
+  const rawP1 = usToProbability(usOdds1);
+  const rawP2 = usToProbability(usOdds2);
+  if (rawP1 === null || rawP2 === null) return null;
+
+  // Round probabilities to 4 decimal places (standard percentage with 2 decimal places)
+  const p1 = Math.round(rawP1 * 10000) / 10000;
+  const p2 = Math.round(rawP2 * 10000) / 10000;
+
+  const overroundTotal = p1 + p2; // e.g. 1.0476 for -110/-110
+  const overroundMarkup = (overroundTotal - 1) * 100; // e.g. 4.76%
+  const vig = (1 - (1 / overroundTotal)) * 100; // e.g. 4.5437...% -> 4.54%
+  const hold = vig; // Theoretical hold percentage
+
+  const fairP1 = (p1 / overroundTotal) * 100;
+  const fairP2 = (p2 / overroundTotal) * 100;
+
+  const fairUs1 = probabilityToUs(fairP1 / 100);
+  const fairUs2 = probabilityToUs(fairP2 / 100);
+
+  return {
+    vig,
+    hold,
+    overroundTotal: overroundTotal * 100,
+    overroundMarkup,
+    p1: p1 * 100,
+    p2: p2 * 100,
+    fairP1,
+    fairP2,
+    fairUs1,
+    fairUs2
   };
 }
